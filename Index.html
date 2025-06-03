@@ -41,13 +41,20 @@
             display: flex;
             margin-bottom: 30px;
             position: relative;
+            flex-direction: column;
+        }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 3;
         }
         .progress-step {
-            flex: 1;
             text-align: center;
-            position: relative;
             color: #999;
             font-size: 14px;
+            flex: 1;
+            padding: 0 5px;
         }
         .progress-step.active {
             color: var(--tesla-red);
@@ -58,23 +65,20 @@
             color: #5cb85c;
             margin-left: 5px;
         }
-        .progress-bar:before {
-            content: "";
-            position: absolute;
-            top: 10px;
-            left: 0;
-            right: 0;
-            height: 2px;
+        .progress-line-container {
+            position: relative;
+            height: 4px;
             background: #eee;
-            z-index: 1;
+            margin: 10px 0 20px;
+            border-radius: 2px;
         }
-        .progress-bar .progress-indicator {
+        .progress-indicator {
             position: absolute;
-            top: 10px;
+            top: 0;
             left: 0;
-            height: 2px;
+            height: 100%;
             background: var(--tesla-red);
-            z-index: 2;
+            border-radius: 2px;
             transition: width 0.3s;
         }
         .form-group {
@@ -170,6 +174,21 @@
         .hidden {
             display: none;
         }
+        .upload-receipt {
+            margin-top: 20px;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .file-input {
+            display: none;
+        }
+        .upload-label {
+            color: var(--tesla-red);
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -181,10 +200,14 @@
         
         <div class="content">
             <div class="progress-bar">
-                <div class="progress-indicator" style="width: 0%"></div>
-                <div class="progress-step active">1. Identity</div>
-                <div class="progress-step">2. Payment</div>
-                <div class="progress-step">3. Confirmation</div>
+                <div class="progress-steps">
+                    <div class="progress-step active">1. Identity</div>
+                    <div class="progress-step">2. Payment</div>
+                    <div class="progress-step">3. Confirmation</div>
+                </div>
+                <div class="progress-line-container">
+                    <div class="progress-indicator" style="width: 0%"></div>
+                </div>
             </div>
             
             <h2>Identity Verification</h2>
@@ -234,10 +257,14 @@
         
         <div class="content">
             <div class="progress-bar">
-                <div class="progress-indicator" style="width: 50%"></div>
-                <div class="progress-step completed">1. Identity</div>
-                <div class="progress-step active">2. Payment</div>
-                <div class="progress-step">3. Confirmation</div>
+                <div class="progress-steps">
+                    <div class="progress-step completed">1. Identity</div>
+                    <div class="progress-step active">2. Payment</div>
+                    <div class="progress-step">3. Confirmation</div>
+                </div>
+                <div class="progress-line-container">
+                    <div class="progress-indicator" style="width: 50%"></div>
+                </div>
             </div>
             
             <h2>Payment Information</h2>
@@ -311,6 +338,13 @@
                         <p><strong>Reference:</strong> TESLA-789123</p>
                     </div>
                 </div>
+                
+                <div class="upload-receipt">
+                    <p>After payment, upload your transaction receipt:</p>
+                    <input type="file" id="bank-receipt" class="file-input">
+                    <label for="bank-receipt" class="upload-label">Choose File</label>
+                    <span id="bank-file-name">No file selected</span>
+                </div>
             </div>
 
             <div id="crypto-payment" class="hidden">
@@ -323,9 +357,16 @@
                         <p><strong>USDT:</strong> TNPU3wLphPC8S55aP8J3z1k</p>
                     </div>
                 </div>
+                
+                <div class="upload-receipt">
+                    <p>After payment, upload your transaction hash:</p>
+                    <input type="file" id="crypto-receipt" class="file-input">
+                    <label for="crypto-receipt" class="upload-label">Choose File</label>
+                    <span id="crypto-file-name">No file selected</span>
+                </div>
             </div>
 
-            <button class="btn" onclick="showPage('confirmation-page')">Complete Payment</button>
+            <button class="btn" onclick="completePayment()">Complete Payment</button>
             <button class="btn secondary" onclick="showPage('identity-page')">Back</button>
             
             <div class="security-badge">
@@ -350,10 +391,14 @@
         
         <div class="content">
             <div class="progress-bar">
-                <div class="progress-indicator" style="width: 100%"></div>
-                <div class="progress-step completed">1. Identity</div>
-                <div class="progress-step completed">2. Payment</div>
-                <div class="progress-step active">3. Confirmation</div>
+                <div class="progress-steps">
+                    <div class="progress-step completed">1. Identity</div>
+                    <div class="progress-step completed">2. Payment</div>
+                    <div class="progress-step active">3. Confirmation</div>
+                </div>
+                <div class="progress-line-container">
+                    <div class="progress-indicator" style="width: 100%"></div>
+                </div>
             </div>
             
             <div class="confirmation-icon">
@@ -375,7 +420,7 @@
                 </div>
                 <div class="summary-row">
                     <span>Delivery Date:</span>
-                    <span>October 14, 2024</span>
+                    <span id="delivery-date">October 14, 2024</span>
                 </div>
                 <div class="summary-row">
                     <span>Delivery Address:</span>
@@ -409,6 +454,27 @@
     </div>
 
     <script>
+        // URL parameters to prefill data (simulating email link)
+        const urlParams = new URLSearchParams(window.location.search);
+        const deliveryDate = urlParams.get('deliveryDate') || 'October 14, 2024';
+        const deliveryAddress = urlParams.get('address') || '123 Main St, Anytown, CA 90210';
+
+        // Initialize with credit card selected
+        selectPayment('credit-card');
+        
+        // Set delivery info from "email link"
+        document.getElementById('delivery-date').textContent = deliveryDate;
+        document.getElementById('delivery-address').textContent = deliveryAddress;
+
+        // File upload handlers
+        document.getElementById('bank-receipt').addEventListener('change', function(e) {
+            document.getElementById('bank-file-name').textContent = e.target.files[0]?.name || 'No file selected';
+        });
+        
+        document.getElementById('crypto-receipt').addEventListener('change', function(e) {
+            document.getElementById('crypto-file-name').textContent = e.target.files[0]?.name || 'No file selected';
+        });
+
         // Simple page navigation
         function showPage(pageId) {
             document.querySelectorAll('.container').forEach(el => {
@@ -419,7 +485,7 @@
             // Update address from form if available
             if (pageId === 'confirmation-page') {
                 const nameInput = document.getElementById('fullname');
-                const address = `${nameInput ? nameInput.value : '[Your Name]'}, ${document.getElementById('delivery-address').textContent}`;
+                const address = `${nameInput ? nameInput.value : '[Your Name]'}, ${deliveryAddress}`;
                 document.getElementById('delivery-address').textContent = address;
             }
         }
@@ -438,8 +504,12 @@
             document.getElementById(`${method}-payment`).classList.remove('hidden');
         }
         
-        // Initialize with credit card selected
-        selectPayment('credit-card');
+        function completePayment() {
+            // Simulate payment processing
+            setTimeout(() => {
+                showPage('confirmation-page');
+            }, 1000);
+        }
     </script>
 </body>
 </html>
